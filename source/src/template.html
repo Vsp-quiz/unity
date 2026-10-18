@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KT Giải Mã Unity3D</title>
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#16181d;--mute:#667085;--line:#e3e6ec;--acc:#2457d6;--acc-ink:#fff;--ok:#12805c;--err:#c0352b;--chip:#eef1f6;--sel:#e8efff;--code:#f1f3f7}
+@media (prefers-color-scheme:dark){:root{--bg:#111318;--panel:#1a1d24;--ink:#e8eaee;--mute:#98a1b2;--line:#2b303b;--acc:#6b93ff;--acc-ink:#0b1020;--ok:#4cc79a;--err:#ff8a80;--chip:#252a35;--sel:#222c45;--code:#12151b}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{padding:0 16px 40px}
+.wrap{max-width:1200px;margin:0 auto}
+header{padding:22px 0 10px}
+h1{font-size:22px;margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--mute);margin:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:14px}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:28px 16px;text-align:center;cursor:pointer;transition:.15s}
+.drop.over{border-color:var(--acc);background:var(--sel)}
+.drop b{display:block;font-size:16px;margin-bottom:4px}
+.drop span{color:var(--mute);font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button,.btn{font:inherit;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--acc)}
+button.primary{background:var(--acc);color:var(--acc-ink);border-color:var(--acc);font-weight:600}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.sm{padding:3px 8px;font-size:13px}
+input[type=search],input[type=text],textarea{font:inherit;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:8px 10px;min-width:0}
+input[type=search]{flex:1 1 200px}
+label.chk{display:inline-flex;gap:6px;align-items:center;color:var(--mute);font-size:13px}
+#status{font-size:14px;color:var(--mute);min-height:20px}
+#status.err{color:var(--err)}#status.ok{color:var(--ok)}
+.bar{height:6px;background:var(--chip);border-radius:6px;overflow:hidden;margin-top:8px;display:none}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .2s}
+details{margin-top:12px}summary{cursor:pointer;color:var(--mute);font-size:13px}
+.src{font-size:13px;color:var(--mute);margin:3px 0}.src b{color:var(--ink)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.chip{background:var(--chip);border:1px solid transparent;border-radius:999px;padding:3px 10px;font-size:13px;cursor:pointer;user-select:none}
+.chip.on{background:var(--acc);color:var(--acc-ink)}
+.chip small{opacity:.7;margin-left:4px}
+.layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.layout{grid-template-columns:1fr}}
+#list{height:min(62vh,560px);overflow:auto;border:1px solid var(--line);border-radius:10px;position:relative;background:var(--panel)}
+#list .sp{position:relative}
+.it{position:absolute;left:0;right:0;height:38px;display:flex;align-items:center;gap:8px;padding:0 8px;border-bottom:1px solid var(--line);cursor:pointer}
+.it:hover{background:var(--chip)}.it.cur{background:var(--sel)}
+.it .t{flex:0 0 auto;font-size:11px;background:var(--chip);border-radius:5px;padding:1px 6px;color:var(--mute);width:84px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.it .n{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.it .s{flex:0 0 auto;font-size:12px;color:var(--mute)}
+#pv{min-height:200px}
+#pv h3{margin:0 0 4px;font-size:15px;word-break:break-all}
+#pv .meta{font-size:12px;color:var(--mute);margin-bottom:8px;word-break:break-all}
+#pv pre{background:var(--code);border-radius:8px;padding:10px;overflow:auto;max-height:52vh;font:12.5px/1.4 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-all;margin:0}
+#pv img{max-width:100%;max-height:52vh;border-radius:6px;background:repeating-conic-gradient(var(--chip) 0 25%,transparent 0 50%) 0 0/16px 16px}
+#pv audio{width:100%}
+.empty{color:var(--mute);padding:30px 8px;text-align:center}
+.errs{font-size:13px;color:var(--err);margin-top:8px;white-space:pre-wrap}
+.kr{display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line);font-size:13px}.kr code{color:var(--mute);word-break:break-all}.kr .x{margin-left:auto}
+.warn{font-size:12px;color:var(--mute);margin-top:10px}
+footer{color:var(--mute);font-size:12px;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>KT Giải Mã Unity3D</h1>
+  <p class="sub">Giải mã &amp; đọc file <code>.unity3d</code> ngay trên trình duyệt — dữ liệu không rời khỏi máy của bạn.</p>
+</header>
+
+<div class="card" id="statusCard" style="padding:12px 16px">
+  <div id="status">Đang khởi động bộ giải mã…</div>
+  <div class="bar" id="bar"><i id="barI"></i></div>
+  <div class="errs" id="errs"></div>
+</div>
+
+<div class="card" id="viewInput">
+  <div class="drop" id="drop" tabindex="0">
+    <b>Kéo thả file .unity3d vào đây, hoặc bấm để chọn</b>
+    <span>Chọn được nhiều file, cả thư mục hoặc file .zip chứa nhiều bundle</span>
+  </div>
+  <input type="file" id="fileIn" multiple hidden>
+  <input type="file" id="dirIn" webkitdirectory hidden>
+  <div class="row" style="margin-top:10px">
+    <button id="pickFiles">Chọn file…</button>
+    <button id="pickDir">Chọn thư mục…</button>
+    <button id="resetBtn" disabled>Xóa danh sách</button>
+  </div>
+  <div id="picked" class="src" style="margin-top:10px"></div>
+  <div class="row" style="margin-top:12px"><button class="primary" id="decodeBtn" disabled style="font-size:16px;padding:11px 22px">🔓 Giải mã</button><span class="src" id="decHint">Chọn file .unity3d rồi bấm Giải mã.</span></div>
+  <details open id="keyBox">
+    <summary>Khóa giải mã</summary>
+    <label class="chk" style="margin:8px 0"><input type="checkbox" id="noKey"> Không dùng khóa (file không mã hóa)</label>
+    <div id="keyList"></div>
+    <div class="row" style="margin-top:8px">
+      <button id="pickKeys" class="sm">+ Thêm khóa từ file (keys.json / global-metadata.dat)…</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <input type="text" id="keyTxt" placeholder="Hoặc dán khóa hex (256 ký tự)…" style="flex:1 1 220px">
+      <button id="addKey" class="sm">Thêm</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <span id="keyInfo" class="src"></span>
+    </div>
+    <input type="file" id="keyIn" multiple hidden>
+  </details>
+</div>
+
+<div id="result" hidden>
+  <div class="card">
+    <div class="row" style="margin-bottom:8px"><button id="backBtn" class="sm">← Chọn file / khóa khác</button><span id="status2" class="src"></span></div>
+    <div id="srcs"></div>
+    <div class="row" style="margin-top:10px">
+      <button class="primary" id="zipAll">⬇ Tải toàn bộ (ZIP)</button>
+      <button id="zipFilter">⬇ ZIP mục đang lọc</button>
+      <button id="zipSel" disabled>⬇ ZIP mục đã chọn</button>
+      <button id="decBtn">⬇ Bundle đã giải mã</button>
+      <label class="chk"><input type="checkbox" id="optRaw"> kèm bản thô (.bin)</label>
+      <label class="chk"><input type="checkbox" id="optDec" checked> kèm bundle đã giải mã</label>
+    </div>
+  </div>
+  <div class="card">
+    <div class="row">
+      <input type="search" id="q" placeholder="Tìm theo tên / đường dẫn…">
+      <button id="selAll" class="sm">Chọn tất cả đang lọc</button>
+      <button id="selNone" class="sm">Bỏ chọn</button>
+      <span id="count" class="src"></span>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="layout">
+      <div id="list"><div class="sp" id="sp"></div></div>
+      <div class="card" id="pv" style="margin-top:0"><div class="empty">Bấm vào một mục để xem trước nội dung.</div></div>
+    </div>
+  </div>
+</div>
+<footer>Giải mã: hoán vị khối + XOR khóa 128 byte (KTResourceCrypto), đọc bằng UnityPy chạy trong WebAssembly (Pyodide). Lần chạy đầu cần mạng để tải thư viện.</footer>
+</div>
+
+<script id="workerSrc" type="text/plain">/*__WORKER__*/</script>
+<script>
+'use strict';
+const PYODIDE_VERSION = '314.0.7';
+const CDN = 'https://cdn.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/';
+const PACKAGES = ['numpy', 'pillow', 'lz4', 'brotli', 'texture2ddecoder', 'attrs', 'fsspec', 'typing-extensions'];
+const PKG_B64 = '__PKG_B64__';
+
+const $ = id => document.getElementById(id);
+const fmt = n => n < 1024 ? n + ' B' : n < 1048576 ? (n / 1024).toFixed(1) + ' KB' : (n / 1048576).toFixed(1) + ' MB';
+const st = (t, cls) => { const s = $('status'); s.textContent = t; s.className = cls || ''; };
+const bar = p => { $('bar').style.display = p == null ? 'none' : 'block'; if (p != null) $('barI').style.width = p + '%'; };
+
+let worker = null, ready = false, busy = false, reqId = 0;
+const waiting = new Map();
+let keyState = [], lastFiles = [], queued = [], all = [], view = [], types = {}, typeSel = new Set(), selected = new Set(), cur = null, summary = null, pvUrl = null, pvReq = 0;
+
+function call(msg, transfer) {
+  return new Promise((res, rej) => { const req = ++reqId; waiting.set(req, { res, rej }); worker.postMessage(Object.assign({ req }, msg), transfer || []); });
+}
+
+async function pickBases() {
+  const bases = [];
+  if (location.protocol.startsWith('http')) {
+    try { const r = await fetch('pyodide/pyodide-lock.json', { method: 'HEAD' }); if (r.ok) bases.push(new URL('pyodide/', location.href).href); } catch (e) {}
+  }
+  bases.push(CDN);
+  return bases;
+}
+
+async function boot() {
+  const src = $('workerSrc').textContent;
+  worker = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })), { type: 'module' });
+  worker.onmessage = onMsg;
+  worker.onerror = e => { st('Lỗi bộ xử lý: ' + (e.message || 'không khởi động được worker') + (location.protocol === 'file:' ? ' — hãy mở trang qua http(s) (GitHub Pages / python -m http.server), không mở trực tiếp file://' : ''), 'err'); };
+  bar(3);
+  worker.postMessage({ type: 'init', bases: await pickBases(), packages: PACKAGES, pkg: PKG_B64 });
+}
+
+function onMsg(ev) {
+  const m = ev.data;
+  switch (m.type) {
+    case 'status': st(m.text); bar(m.pct); break;
+    case 'ready': ready = true; initKeys(m.defaults); bar(null);
+      if (wantDecode) { wantDecode = false; decode(); } else if (!lastFiles.length) st('Sẵn sàng. Hãy chọn file .unity3d.', 'ok'); else st('Sẵn sàng. Bấm "Giải mã".', 'ok'); break;
+    case 'loaded': onLoaded(m); break;
+    case 'error': {
+      const w = waiting.get(m.req); if (w) { waiting.delete(m.req); w.rej(new Error(m.message)); }
+      else { st('Lỗi: ' + m.message, 'err'); bar(null); busy = false; }
+      break; }
+    case 'preview': case 'exported': case 'zip': case 'decrypted': case 'reset': case 'parsedkeys': {
+      if (m.type === 'preview' && m.req !== pvReq) { /* ket qua cu */ }
+      const w = waiting.get(m.req); if (w) { waiting.delete(m.req); w.res(m); }
+      if (m.type === 'reset') onReset();
+      break; }
+  }
+}
+
+// ---------------------------------------------------------------- nap file
+async function readEntries(items) {
+  const out = [];
+  async function walk(entry, path) {
+    if (entry.isFile) { const f = await new Promise((r, j) => entry.file(r, j)); out.push({ file: f, name: path + f.name }); }
+    else if (entry.isDirectory) {
+      const rd = entry.createReader(); let batch;
+      do { batch = await new Promise((r, j) => rd.readEntries(r, j)); for (const e of batch) await walk(e, path + entry.name + '/'); } while (batch.length);
+    }
+  }
+  for (const it of items) { const e = it.webkitGetAsEntry && it.webkitGetAsEntry(); if (e) await walk(e, ''); else if (it.getAsFile) { const f = it.getAsFile(); if (f) out.push({ file: f, name: f.name }); } }
+  return out;
+}
+
+function showPicked(list) {
+  $('picked').innerHTML = list.length ? '<b>Đã chọn ' + list.length + ' file:</b> ' + list.slice(0, 6).map(x => esc(x.name) + ' (' + fmt(x.file.size) + ')').join(', ') + (list.length > 6 ? ' …' : '') : '';
+}
+
+function pickFiles(list) {
+  list = list.filter(x => x.file && x.file.size > 0);
+  if (!list.length) { st('File rỗng hoặc không đọc được. Hãy chọn lại.', 'err'); return; }
+  lastFiles = list; showPicked(list); $('resetBtn').disabled = false; $('decodeBtn').disabled = false;
+  $('decHint').textContent = 'Kiểm tra khóa bên dưới (nếu cần) rồi bấm Giải mã.';
+  st('Đã chọn ' + list.length + ' file. Bấm "Giải mã" để bắt đầu.', 'ok');
+}
+
+let wantDecode = false;
+async function decode() {
+  if (!lastFiles.length) return;
+  if (!ready) { wantDecode = true; st('Bộ giải mã đang khởi động — sẽ tự giải mã ngay khi xong…'); return; }
+  if (busy) return;
+  worker.postMessage({ type: 'reset', req: 0 });
+  await new Promise(r => { const h = ev => { if (ev.data.type === 'reset') { worker.removeEventListener('message', h); r(); } }; worker.addEventListener('message', h); });
+  loadFiles(lastFiles);
+}
+
+async function loadFiles(list) {
+  busy = true; $('errs').textContent = '';
+  st('Đang đọc file…'); bar(2);
+  try {
+    const files = [], tr = [];
+    for (const x of list) { const buf = await x.file.arrayBuffer(); files.push({ name: x.name, buf }); tr.push(buf); }
+    worker.postMessage({ type: 'add', files, keys: activeKeys() }, tr);
+  } catch (e) {
+    busy = false; bar(null);
+    st('Không đọc được file (' + (e.message || e) + '). Nếu file nằm ở Drive/ứng dụng khác, hãy tải về máy rồi chọn lại.', 'err');
+  }
+}
+
+// ---------------------------------------------------------------- quan ly khoa
+function saveKeys() { try { localStorage.setItem('kt_keys_v1', JSON.stringify({ keys: keyState.filter(k => !k.def), sel: keyState.filter(k => !k.on).map(k => k.hex), nokey: $('noKey').checked })); } catch (e) {} }
+function initKeys(defs) {
+  keyState = defs.map((h, i) => ({ label: 'Khóa mặc định ' + (i + 1) + ' (mode ' + i + ')', hex: h, on: true, def: true }));
+  try {
+    const sv = JSON.parse(localStorage.getItem('kt_keys_v1') || 'null');
+    if (sv) { (sv.keys || []).forEach(k => { if (!keyState.some(x => x.hex === k.hex)) keyState.push({ label: k.label, hex: k.hex, on: true, def: false }); });
+      keyState.forEach(k => { if ((sv.sel || []).includes(k.hex)) k.on = false; }); $('noKey').checked = !!sv.nokey; }
+  } catch (e) {}
+  renderKeys();
+}
+function activeKeys() { return $('noKey').checked ? [] : keyState.filter(k => k.on).map(k => [k.label, k.hex]); }
+function renderKeys() {
+  const L = $('keyList'); L.innerHTML = '';
+  keyState.forEach((k, i) => {
+    const d = document.createElement('div'); d.className = 'kr';
+    d.innerHTML = '<input type="checkbox"' + (k.on ? ' checked' : '') + (($('noKey').checked) ? ' disabled' : '') + '> <span>' + esc(k.label) + '</span> <code>' + k.hex.slice(0, 16) + '…' + k.hex.slice(-8) + '</code>' +
+      (k.def ? '' : '<button class="sm x">Xóa</button>');
+    d.querySelector('input').onchange = e => { k.on = e.target.checked; saveKeys(); keyMsg(); };
+    const x = d.querySelector('.x'); if (x) x.onclick = () => { keyState.splice(i, 1); saveKeys(); renderKeys(); };
+    L.appendChild(d);
+  });
+  keyMsg();
+}
+function keyMsg() { $('keyInfo').textContent = $('noKey').checked ? 'Đang KHÔNG dùng khóa' : 'Sẽ thử ' + activeKeys().length + ' khóa đã chọn'; }
+function addKeys(hexes, label) {
+  let n = 0;
+  hexes.forEach(h => { h = h.toLowerCase(); if (!keyState.some(k => k.hex === h)) { keyState.push({ label: label + ' ' + (keyState.length + 1), hex: h, on: true, def: false }); n++; } });
+  saveKeys(); renderKeys(); return n;
+}
+$('noKey').onchange = () => { saveKeys(); renderKeys(); };
+$('addKey').onclick = () => {
+  const m = ($('keyTxt').value.match(/[0-9a-fA-F]{256}/g) || []);
+  if (!m.length) { $('keyInfo').textContent = 'Khóa phải là chuỗi hex đúng 256 ký tự (128 byte).'; return; }
+  const n = addKeys(m, 'Khóa thêm'); $('keyTxt').value = ''; $('keyInfo').textContent = 'Đã thêm ' + n + ' khóa mới';
+};
+
+function onLoaded(m) {
+  busy = false; bar(null);
+  const bad = m.results.filter(r => !r.ok);
+  $('errs').textContent = bad.map(r => '✗ ' + r.name + ': ' + r.error).join('\n');
+  summary = m.summary;
+  all = summary.entries.map(e => ({ id: e[0], type: e[1], name: e[2], size: e[3], path: e[4], src: e[5], key: ((e[4] || e[2] || '') + ' ' + e[1] + ' ' + e[0]).toLowerCase() }));
+  types = {}; all.forEach(e => types[e.type] = (types[e.type] || 0) + 1);
+  typeSel = new Set(); selected = new Set(); cur = null;
+  $('resetBtn').disabled = false;
+  const okN = m.results.filter(r => r.ok).length;
+  st(bad.length ? 'Đã đọc ' + okN + ' file, ' + bad.length + ' file lỗi.' : 'Giải mã thành công: ' + all.length + ' mục.', bad.length ? 'err' : 'ok');
+  renderResult();
+  if (okN) { $('viewInput').hidden = true; window.scrollTo(0, 0); $('status2').textContent = 'Giải mã xong: ' + all.length + ' mục'; }
+}
+
+function renderResult() {
+  $('result').hidden = !all.length;
+  $('srcs').innerHTML = summary.sources.map(s => '<div class="src"><b>' + esc(s.name) + '</b> — ' + esc(s.note) + ' · ' + fmt(s.size) +
+    (s.version ? ' · Unity ' + esc(s.version) : '') + '</div>').join('');
+  renderChips(); applyFilter();
+  $('pv').innerHTML = '<div class="empty">Bấm vào một mục để xem trước nội dung.</div>';
+}
+
+function renderChips() {
+  const c = $('chips'); c.innerHTML = '';
+  Object.entries(types).sort((a, b) => b[1] - a[1]).forEach(([t, n]) => {
+    const e = document.createElement('span'); e.className = 'chip' + (typeSel.has(t) ? ' on' : ''); e.innerHTML = esc(t) + '<small>' + n + '</small>';
+    e.onclick = () => { typeSel.has(t) ? typeSel.delete(t) : typeSel.add(t); renderChips(); applyFilter(); };
+    c.appendChild(e);
+  });
+}
+
+function applyFilter() {
+  const q = $('q').value.trim().toLowerCase();
+  view = all.filter(e => (!typeSel.size || typeSel.has(e.type)) && (!q || e.key.includes(q)));
+  $('count').textContent = view.length + '/' + all.length + ' mục · đã chọn ' + selected.size;
+  $('zipSel').disabled = !selected.size;
+  $('sp').style.height = view.length * 38 + 'px';
+  $('list').scrollTop = 0; paint();
+}
+
+// danh sach ao (chi ve cac dong dang nhin thay)
+function paint() {
+  const L = $('list'), top = L.scrollTop, h = L.clientHeight;
+  const a = Math.max(0, Math.floor(top / 38) - 5), b = Math.min(view.length, Math.ceil((top + h) / 38) + 5);
+  let html = '';
+  for (let i = a; i < b; i++) {
+    const e = view[i], nm = e.path || e.name || ('(không tên) #' + e.id.split(':')[1]);
+    html += '<div class="it' + (cur === e.id ? ' cur' : '') + '" style="top:' + i * 38 + 'px" data-i="' + i + '">' +
+      '<input type="checkbox" data-c="' + i + '"' + (selected.has(e.id) ? ' checked' : '') + '>' +
+      '<span class="t">' + esc(e.type) + '</span><span class="n" title="' + esc(nm) + '">' + esc(nm) + '</span><span class="s">' + fmt(e.size) + '</span>' +
+      '<button class="sm" data-d="' + i + '" title="Tải file này">⬇</button></div>';
+  }
+  $('sp').innerHTML = html;
+}
+$('list').addEventListener('scroll', paint);
+$('list').addEventListener('click', ev => {
+  const t = ev.target;
+  if (t.dataset.c != null) { const e = view[+t.dataset.c]; t.checked ? selected.add(e.id) : selected.delete(e.id); applyFilter2(); return; }
+  if (t.dataset.d != null) { downloadOne(view[+t.dataset.d]); return; }
+  const row = t.closest('.it'); if (row) showPreview(view[+row.dataset.i]);
+});
+function applyFilter2() { $('count').textContent = view.length + '/' + all.length + ' mục · đã chọn ' + selected.size; $('zipSel').disabled = !selected.size; }
+
+// ---------------------------------------------------------------- xem truoc / tai
+function dl(data, name, type) {
+  const url = URL.createObjectURL(new Blob([data], { type: type || 'application/octet-stream' }));
+  const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+const MIME = { png: 'image/png', ogg: 'audio/ogg', wav: 'audio/wav', m4a: 'audio/mp4', json: 'application/json', xml: 'application/xml', obj: 'text/plain', txt: 'text/plain' };
+const mimeOf = n => MIME[(n.split('.').pop() || '').toLowerCase()] || 'application/octet-stream';
+const base = p => p.split('/').pop();
+
+async function showPreview(e) {
+  cur = e.id; paint();
+  const req = ++pvReq;
+  $('pv').innerHTML = '<div class="empty">Đang đọc…</div>';
+  try {
+    const m = await call({ type: 'preview', id: e.id });
+    if (req !== pvReq) return;
+    renderPreview(e, m);
+  } catch (err) { if (req === pvReq) $('pv').innerHTML = '<div class="empty" style="color:var(--err)">Không đọc được: ' + esc(err.message) + '</div>'; }
+}
+
+function renderPreview(e, m) {
+  if (pvUrl) { URL.revokeObjectURL(pvUrl); pvUrl = null; }
+  const box = $('pv');
+  if (!m.meta.ok) { box.innerHTML = '<h3>' + esc(e.name) + '</h3><div class="meta">' + esc(e.type) + '</div><div class="errs">' + esc(m.meta.error || 'Không có dữ liệu') + '</div>'; return; }
+  const k = m.meta.kind, name = base(m.meta.rel), d = m.data;
+  let body = '';
+  if (k === 'image') { pvUrl = URL.createObjectURL(new Blob([d], { type: 'image/png' })); body = '<img src="' + pvUrl + '" alt="">'; }
+  else if (k === 'audio') { pvUrl = URL.createObjectURL(new Blob([d], { type: mimeOf(name) })); body = '<audio controls src="' + pvUrl + '"></audio>'; }
+  else if (k === 'text' || k === 'json' || k === 'model') {
+    let s = new TextDecoder('utf-8').decode(d.subarray(0, 300000));
+    if (k === 'json') { try { s = JSON.stringify(JSON.parse(new TextDecoder().decode(d.subarray(0, 300000))), null, 1); } catch (x) {} }
+    body = '<pre>' + esc(s) + (d.length > 300000 ? '\n… (hiển thị 300 KB đầu, tải về để xem đủ)' : '') + '</pre>';
+  } else {
+    const n = Math.min(d.length, 512); let hx = '';
+    for (let i = 0; i < n; i += 16) {
+      const row = Array.from(d.subarray(i, Math.min(n, i + 16)));
+      hx += i.toString(16).padStart(6, '0') + '  ' + row.map(b => b.toString(16).padStart(2, '0')).join(' ').padEnd(48) + ' ' + row.map(b => b >= 32 && b < 127 ? String.fromCharCode(b) : '.').join('') + '\n';
+    }
+    body = '<pre>' + esc(hx) + (d.length > 512 ? '… (512 byte đầu)' : '') + '</pre>';
+  }
+  box.innerHTML = '<h3>' + esc(m.meta.rel) + '</h3><div class="meta">' + esc(e.type) + ' · ' + fmt(m.meta.size) + ' · path_id ' + esc(e.id.split(':')[1] || '') + '</div>' + body +
+    '<div class="row" style="margin-top:10px"><button class="primary sm" id="pvDl">⬇ Tải file này</button></div>';
+  $('pvDl').onclick = () => dl(d, name, mimeOf(name));
+}
+
+async function downloadOne(e) {
+  try {
+    const m = await call({ type: 'export', id: e.id, raw: $('optRaw').checked });
+    if (!m.files.length) { st('Mục này không có dữ liệu để tải.', 'err'); return; }
+    if (m.files.length === 1) dl(m.files[0].data, base(m.files[0].rel), mimeOf(m.files[0].rel));
+    else m.files.forEach(f => dl(f.data, base(f.rel), mimeOf(f.rel)));
+  } catch (err) { st('Lỗi: ' + err.message, 'err'); }
+}
+
+async function zipIds(ids, label) {
+  if (busy) return; busy = true;
+  setBtns(true); st('Đang tạo ZIP…'); bar(1);
+  try {
+    const m = await call({ type: 'zip', ids, raw: $('optRaw').checked, dec: $('optDec').checked });
+    const nm = ((summary.sources[0] && base(summary.sources[0].name).replace(/\.[^.]+$/, '')) || 'unity3d') + '_' + label + '.zip';
+    dl(m.data, nm, 'application/zip');
+    st('Xong: ' + nm + ' — ' + m.meta.files + ' file, ' + fmt(m.data.length) + (m.meta.errors ? ' · ' + m.meta.errors + ' mục lỗi (xem _errors.txt trong ZIP)' : ''), 'ok');
+  } catch (err) { st('Lỗi tạo ZIP: ' + err.message, 'err'); }
+  bar(null); busy = false; setBtns(false);
+}
+function setBtns(b) { ['zipAll', 'zipFilter', 'decBtn'].forEach(i => $(i).disabled = b); $('zipSel').disabled = b || !selected.size; }
+
+$('zipAll').onclick = () => zipIds(null, 'giaima');
+$('zipFilter').onclick = () => zipIds(view.map(e => e.id), 'loc');
+$('zipSel').onclick = () => zipIds([...selected], 'chon');
+$('decBtn').onclick = async () => {
+  try { for (let i = 0; i < summary.sources.length; i++) { if (summary.sources[i].mode == null && summary.sources[i].kind === 'bundle') continue;
+      const m = await call({ type: 'decrypted', src: i }); dl(m.data, m.name.replace(/(\.[^.]*)?$/, '_giaima$1'), 'application/octet-stream'); }
+  } catch (err) { st('Lỗi: ' + err.message, 'err'); }
+};
+$('selAll').onclick = () => { view.forEach(e => selected.add(e.id)); paint(); applyFilter2(); };
+$('selNone').onclick = () => { selected.clear(); paint(); applyFilter2(); };
+$('q').addEventListener('input', applyFilter);
+$('resetBtn').onclick = () => { if (busy) return; lastFiles = []; showPicked([]); $('decodeBtn').disabled = true; $('resetBtn').disabled = true; worker.postMessage({ type: 'reset', req: 0 }); };
+$('decodeBtn').onclick = decode;
+$('backBtn').onclick = () => { $('viewInput').hidden = false; $('result').hidden = true; window.scrollTo(0, 0); };
+function onReset() { all = []; view = []; summary = null; $('result').hidden = true; $('viewInput').hidden = false; $('errs').textContent = ''; }
+
+// ---------------------------------------------------------------- nhap lieu
+const drop = $('drop');
+drop.onclick = () => $('fileIn').click();
+drop.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') $('fileIn').click(); };
+$('pickFiles').onclick = () => $('fileIn').click();
+$('pickDir').onclick = () => $('dirIn').click();
+$('pickKeys').onclick = () => $('keyIn').click();
+$('fileIn').onchange = e => { pickFiles([...e.target.files].map(f => ({ file: f, name: f.name }))); e.target.value = ''; };
+$('dirIn').onchange = e => { pickFiles([...e.target.files].map(f => ({ file: f, name: f.webkitRelativePath || f.name }))); e.target.value = ''; };
+$('keyIn').onchange = async e => {
+  const fl = [...e.target.files]; e.target.value = '';
+  if (!ready) { $('keyInfo').textContent = 'Đợi bộ giải mã khởi động xong rồi thêm khóa.'; return; }
+  let total = 0;
+  for (const f of fl) {
+    try { const buf = await f.arrayBuffer(); const m = await call({ type: 'parsekeys', buf, name: f.name }, [buf]);
+      if (m.r.ok) total += addKeys(m.r.keys, 'Khóa từ ' + f.name.slice(0, 24)); else $('keyInfo').textContent = f.name + ': ' + m.r.error;
+    } catch (err) { $('keyInfo').textContent = f.name + ': ' + err.message; }
+  }
+  if (total) $('keyInfo').textContent = 'Đã thêm ' + total + ' khóa mới từ file';
+  else if (!$('keyInfo').textContent.includes(':')) $('keyInfo').textContent = 'Các khóa trong file đã có sẵn trong danh sách.';
+};
+['dragenter', 'dragover'].forEach(n => drop.addEventListener(n, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(n => drop.addEventListener(n, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', async e => { const items = e.dataTransfer.items; pickFiles(items && items.length && items[0].webkitGetAsEntry ? await readEntries([...items]) : [...e.dataTransfer.files].map(f => ({ file: f, name: f.name }))); });
+window.addEventListener('dragover', e => e.preventDefault()); window.addEventListener('drop', e => e.preventDefault());
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+boot();
+</script>
+</body>
+</html>
